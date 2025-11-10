@@ -1,15 +1,11 @@
 cat > .gitignore <<'EOF'
-# deps
 node_modules/
-# Next.js
 .next/
 out/
-# builds / caches
 dist/
 build/
 coverage/
 *.tsbuildinfo
-# env & OS/IDE
 .env*
 .DS_Store
 .vscode/
