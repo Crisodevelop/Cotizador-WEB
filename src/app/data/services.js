@@ -24,12 +24,13 @@ const SERVICES = {
         type: "oneTime",
         priceOneTime: 1500,
         features: [
-          "Todo lo del básico",
           "Diseño exclusivo",
           "Animaciones",
           "Optimización SEO",
         ],
         addons: [
+          { id: "hosting", label: "Hosting + Dominio (1 año)", priceOneTime: 240 },
+          { id: "mantenimiento", label: "Mantenimiento mensual", priceMonthly: 200 },
           { id: "hubspot", label: "Integración CRM / HubSpot", priceOneTime: 300 },
         ],
       },
@@ -44,7 +45,9 @@ const SERVICES = {
           "Integración avanzada (CRM, automatizaciones)",
         ],
         addons: [
-          { id: "ads", label: "Setup Google Ads", priceOneTime: 350 },
+          { id: "hosting", label: "Hosting + Dominio (1 año)", priceOneTime: 240 },
+          { id: "mantenimiento", label: "Mantenimiento mensual", priceMonthly: 200 },
+          { id: "Google + Pixel", label: "Setup Google Analytics + Pixel", priceOneTime: 350 },
         ],
       },
     ],
