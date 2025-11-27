@@ -223,8 +223,8 @@ const SERVICES = {
         id: "sem-fb-ig-starter",
         name: "Campaña Facebook + Instagram · Starter",
         type: "combo", // total + mensual
-        priceOneTime: 350,   // configuración inicial
-        priceMonthly: 400,   // gestión mensual
+        priceOneTime: 400,   // configuración inicial
+        priceMonthly: 350,   // gestión mensual
         features: [
           "1 campaña activa en Facebook + Instagram",
           "1–2 conjuntos de anuncios",
@@ -238,8 +238,8 @@ const SERVICES = {
         id: "sem-fb-ig-growth",
         name: "Campaña Facebook + Instagram · Growth",
         type: "combo",
-        priceOneTime: 600,
-        priceMonthly: 750,
+        priceOneTime: 700,
+        priceMonthly: 600,
         features: [
           "Hasta 2–3 campañas activas (tráfico + conversiones)",
           "Múltiples conjuntos de anuncios para test A/B",
@@ -253,8 +253,8 @@ const SERVICES = {
         id: "sem-fb-ig-pro",
         name: "Campaña Facebook + Instagram · Pro",
         type: "combo",
-        priceOneTime: 900,
-        priceMonthly: 1200,
+        priceOneTime: 1200,
+        priceMonthly: 900,
         features: [
           "Estrategia completa (tráfico, conversiones y remarketing)",
           "Pruebas A/B avanzadas de creatividades y públicos",
@@ -270,7 +270,7 @@ const SERVICES = {
         id: "sem-google-basic",
         name: "Google Ads · Búsqueda Básica",
         type: "combo",
-        priceOneTime: 300,
+        priceOneTime: 400,
         priceMonthly: 300,
         features: [
           "1 campaña de búsqueda enfocada en captación de clientes",
@@ -284,8 +284,8 @@ const SERVICES = {
         id: "sem-google-growth",
         name: "Google Ads · Growth",
         type: "combo",
-        priceOneTime: 450,
-        priceMonthly: 500,
+        priceOneTime: 600,
+        priceMonthly: 400,
         features: [
           "Hasta 2–3 campañas (búsqueda + remarketing o display)",
           "Estrategia de keywords y concordancias avanzada",
@@ -298,8 +298,8 @@ const SERVICES = {
         id: "sem-google-pro",
         name: "Google Ads · Full Funnel",
         type: "combo",
-        priceOneTime: 650,
-        priceMonthly: 800,
+        priceOneTime: 800,
+        priceMonthly: 650,
         features: [
           "Estrategia completa (búsqueda, display, remarketing y/o YouTube)",
           "Configuración de conversiones y eventos clave",
