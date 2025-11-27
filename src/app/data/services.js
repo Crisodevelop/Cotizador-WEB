@@ -1,4 +1,5 @@
 const SERVICES = {
+  // ---------------- LANDING PAGE ----------------
   landing: {
     label: "Landing Page",
     plans: [
@@ -14,8 +15,16 @@ const SERVICES = {
           "Copywriting",
         ],
         addons: [
-          { id: "hosting", label: "Hosting + Dominio (1 año)", priceOneTime: 240 },
-          { id: "mantenimiento", label: "Mantenimiento mensual", priceMonthly: 200 },
+          {
+            id: "landing-hosting",
+            label: "Hosting + Dominio (1 año)",
+            priceOneTime: 240,
+          },
+          {
+            id: "landing-maint",
+            label: "Mantenimiento mensual",
+            priceMonthly: 200,
+          },
         ],
       },
       {
@@ -29,9 +38,21 @@ const SERVICES = {
           "Optimización SEO",
         ],
         addons: [
-          { id: "hosting", label: "Hosting + Dominio (1 año)", priceOneTime: 240 },
-          { id: "mantenimiento", label: "Mantenimiento mensual", priceMonthly: 200 },
-          { id: "hubspot", label: "Integración CRM / HubSpot", priceOneTime: 300 },
+          {
+            id: "landing-custom-hosting",
+            label: "Hosting + Dominio (1 año)",
+            priceOneTime: 240,
+          },
+          {
+            id: "landing-custom-maint",
+            label: "Mantenimiento mensual",
+            priceMonthly: 200,
+          },
+          {
+            id: "landing-hubspot",
+            label: "Integración CRM / HubSpot",
+            priceOneTime: 300,
+          },
         ],
       },
       {
@@ -45,14 +66,27 @@ const SERVICES = {
           "Integración avanzada (CRM, automatizaciones)",
         ],
         addons: [
-          { id: "hosting", label: "Hosting + Dominio (1 año)", priceOneTime: 240 },
-          { id: "mantenimiento", label: "Mantenimiento mensual", priceMonthly: 200 },
-          { id: "Google + Pixel", label: "Setup Google Analytics + Pixel", priceOneTime: 350 },
+          {
+            id: "landing-adv-hosting",
+            label: "Hosting + Dominio (1 año)",
+            priceOneTime: 240,
+          },
+          {
+            id: "landing-adv-maint",
+            label: "Mantenimiento mensual",
+            priceMonthly: 200,
+          },
+          {
+            id: "landing-adv-analytics-pixel",
+            label: "Setup Google Analytics + Pixel",
+            priceOneTime: 350,
+          },
         ],
       },
     ],
   },
 
+  // ---------------- E-COMMERCE ----------------
   ecommerce: {
     label: "E-commerce",
     plans: [
@@ -67,14 +101,27 @@ const SERVICES = {
           "Carga inicial de productos",
         ],
         addons: [
-          { id: "hosting", label: "Hosting + Dominio", priceOneTime: 264 },
-          { id: "productos", label: "Subida de productos (por unidad)", pricePerUnit: 10 },
-          { id: "mantenimiento-ecom", label: "Mantenimiento tienda", priceMonthly: 100 },
+          {
+            id: "ecom-hosting",
+            label: "Hosting + Dominio",
+            priceOneTime: 264,
+          },
+          {
+            id: "ecom-products-upload",
+            label: "Subida de productos (por unidad)",
+            pricePerUnit: 10, // se multiplica por cantidad
+          },
+          {
+            id: "ecom-maint",
+            label: "Mantenimiento tienda",
+            priceMonthly: 100,
+          },
         ],
       },
     ],
   },
 
+  // ---------------- REAL ESTATE ----------------
   realestate: {
     label: "Real Estate",
     plans: [
@@ -90,14 +137,27 @@ const SERVICES = {
           "Seguridad alta",
         ],
         addons: [
-          { id: "hosting-re", label: "Hosting + Dominio", priceOneTime: 256 },
-          { id: "elementor", label: "Licencia Elementor Pro", priceOneTime: 85 },
-          { id: "booking", label: "Sistema de Reservas", priceOneTime: 104 },
+          {
+            id: "re-hosting",
+            label: "Hosting + Dominio",
+            priceOneTime: 256,
+          },
+          {
+            id: "re-elementor",
+            label: "Licencia Elementor Pro",
+            priceOneTime: 85,
+          },
+          {
+            id: "re-booking",
+            label: "Sistema de Reservas",
+            priceOneTime: 104,
+          },
         ],
       },
     ],
   },
 
+  // ---------------- SEO (MENSUAL) ----------------
   seo: {
     label: "SEO / Crecimiento orgánico",
     plans: [
@@ -154,24 +214,104 @@ const SERVICES = {
     ],
   },
 
+  // ---------------- SEM / ADS (FB/IG + GOOGLE) ----------------
   sem: {
-    label: "SEM / Google Ads",
+    label: "SEM / Facebook, Instagram y Google Ads",
     plans: [
+      // Facebook + Instagram
       {
-        id: "sem-setup",
-        name: "Campaña Ads + Gestión",
+        id: "sem-fb-ig-starter",
+        name: "Campaña Facebook + Instagram · Starter",
         type: "combo", // setup + mensual
-        priceOneTime: 1000,       // setup inicial
-        priceMonthly: 350,        // gestión mensual
+        priceOneTime: 250,
+        priceMonthly: 250,
         features: [
-          "Estrategia orientada a conversión",
-          "Optimización continua",
-          "Reporte de rendimiento",
+          "1 campaña activa en Facebook + Instagram",
+          "1–2 conjuntos de anuncios",
+          "Segmentación básica por intereses y ubicación",
+          "Optimización quincenal",
+          "Reporte mensual simplificado",
+          "Inversión en anuncios recomendada: desde $300–$500 / mes (NO incluida)",
+        ],
+      },
+      {
+        id: "sem-fb-ig-growth",
+        name: "Campaña Facebook + Instagram · Growth",
+        type: "combo",
+        priceOneTime: 350,
+        priceMonthly: 400,
+        features: [
+          "Hasta 2–3 campañas activas (tráfico + conversiones)",
+          "Múltiples conjuntos de anuncios para test A/B",
+          "Segmentación por intereses + audiencias personalizadas",
+          "Optimización semanal",
+          "Reporte mensual con insights y recomendaciones",
+          "Inversión en anuncios recomendada: desde $500–$800 / mes (NO incluida)",
+        ],
+      },
+      {
+        id: "sem-fb-ig-pro",
+        name: "Campaña Facebook + Instagram · Pro",
+        type: "combo",
+        priceOneTime: 500,
+        priceMonthly: 700,
+        features: [
+          "Estrategia completa (tráfico, conversiones y remarketing)",
+          "Pruebas A/B avanzadas (creativos y públicos)",
+          "Reunión de revisión de resultados 1 vez al mes",
+          "Optimización 1–2 veces por semana",
+          "Dashboard / reporte detallado",
+          "Inversión en anuncios recomendada: desde $800–$1,500 / mes (NO incluida)",
+        ],
+      },
+
+      // Google Ads
+      {
+        id: "sem-google-basic",
+        name: "Google Ads · Búsqueda Básica",
+        type: "combo",
+        priceOneTime: 300,
+        priceMonthly: 300,
+        features: [
+          "1 campaña de búsqueda enfocada en captación de clientes",
+          "Palabras clave principales + negativas básicas",
+          "Optimización quincenal",
+          "Reporte mensual básico",
+          "Inversión en anuncios recomendada: desde $300–$500 / mes (NO incluida)",
+        ],
+      },
+      {
+        id: "sem-google-growth",
+        name: "Google Ads · Growth",
+        type: "combo",
+        priceOneTime: 450,
+        priceMonthly: 500,
+        features: [
+          "Hasta 2–3 campañas (búsqueda + remarketing o display)",
+          "Estrategia de keywords y concordancias avanzada",
+          "Optimización semanal",
+          "Reporte mensual con análisis de conversiones",
+          "Inversión en anuncios recomendada: desde $500–$900 / mes (NO incluida)",
+        ],
+      },
+      {
+        id: "sem-google-pro",
+        name: "Google Ads · Full Funnel",
+        type: "combo",
+        priceOneTime: 650,
+        priceMonthly: 800,
+        features: [
+          "Estrategia completa (búsqueda, display, remarketing y/o YouTube)",
+          "Configuración de conversiones y eventos clave",
+          "Optimización continua varias veces por semana",
+          "Revisión estratégica mensual",
+          "Inversión en anuncios recomendada: +$1,000 / mes (NO incluida)",
         ],
       },
     ],
   },
 
+  // ---------------- MANTENIMIENTO ----------------
   mantenimiento: {
     label: "Mantenimiento Web",
     plans: [
