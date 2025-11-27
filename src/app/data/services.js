@@ -86,6 +86,95 @@ const SERVICES = {
     ],
   },
 
+  // ---------------- REDISEÑO WEB ----------------
+  redesign: {
+    label: "Rediseño Web",
+    plans: [
+      {
+        id: "redesign-lite",
+        name: "Refresco Visual",
+        type: "oneTime",
+        priceOneTime: 500,
+        features: [
+          "Análisis visual del sitio actual",
+          "Actualización de tipografías y colores",
+          "Ajustes básicos de layout en páginas clave",
+          "Mejoras ligeras de experiencia de usuario (UX)",
+        ],
+        addons: [
+          {
+            id: "redesign-lite-speed",
+            label: "Optimización de velocidad (imágenes, caché)",
+            priceOneTime: 180,
+          },
+          {
+            id: "redesign-lite-maint",
+            label: "Mantenimiento mensual",
+            priceMonthly: 150,
+          },
+        ],
+      },
+      {
+        id: "redesign-pro",
+        name: "Rediseño Estratégico",
+        type: "oneTime",
+        priceOneTime: 800,
+        features: [
+          "Auditoría UX/UI del sitio actual",
+          "Rediseño de home y páginas de servicio",
+          "Mejora de estructura de contenidos",
+          "Optimización básica para conversiones (formularios / leads)",
+        ],
+        addons: [
+          {
+            id: "redesign-pro-seo",
+            label: "Revisión SEO On-Page (hasta 10 páginas)",
+            priceOneTime: 260,
+          },
+          {
+            id: "redesign-pro-migration",
+            label: "Migración a nuevo hosting o CMS",
+            priceOneTime: 220,
+          },
+          {
+            id: "redesign-pro-maint",
+            label: "Mantenimiento mensual",
+            priceMonthly: 200,
+          },
+        ],
+      },
+      {
+        id: "redesign-full",
+        name: "Rediseño Completo",
+        type: "oneTime",
+        priceOneTime: 1200,
+        features: [
+          "Estrategia completa de arquitectura de información",
+          "Rediseño global del sitio orientado a resultados",
+          "Implementación de nuevas secciones / landings internas",
+          "Optimización UX/UI y performance general",
+        ],
+        addons: [
+          {
+            id: "redesign-full-seo",
+            label: "SEO técnico + On-Page (hasta 20 páginas)",
+            priceOneTime: 420,
+          },
+          {
+            id: "redesign-full-analytics",
+            label: "Reconfiguración Analytics + eventos clave",
+            priceOneTime: 260,
+          },
+          {
+            id: "redesign-full-maint",
+            label: "Mantenimiento mensual",
+            priceMonthly: 250,
+          },
+        ],
+      },
+    ],
+  },
+
   // ---------------- E-COMMERCE ----------------
   ecommerce: {
     label: "E-commerce",
@@ -218,13 +307,12 @@ const SERVICES = {
   sem: {
     label: "SEM / Facebook, Instagram y Google Ads",
     plans: [
-      // 📣 FACEBOOK + INSTAGRAM (ajustadas a mercado)
       {
         id: "sem-fb-ig-starter",
         name: "Campaña Facebook + Instagram · Starter",
-        type: "combo", // total + mensual
-        priceOneTime: 400,   // configuración inicial
-        priceMonthly: 350,   // gestión mensual
+        type: "combo",
+        priceOneTime: 400,  // inversión anuncios sugerida (mensual)
+        priceMonthly: 350,  // fee de trabajo mensual
         features: [
           "1 campaña activa en Facebook + Instagram",
           "1–2 conjuntos de anuncios",
@@ -265,7 +353,7 @@ const SERVICES = {
         ],
       },
 
-      // 🔍 GOOGLE ADS (los dejamos como estaban)
+      // 🔍 GOOGLE ADS
       {
         id: "sem-google-basic",
         name: "Google Ads · Búsqueda Básica",
