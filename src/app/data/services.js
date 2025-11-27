@@ -78,7 +78,7 @@ const SERVICES = {
           },
           {
             id: "landing-adv-analytics-pixel",
-            label: "Setup Google Analytics + Pixel",
+            label: "total Google Analytics + Pixel",
             priceOneTime: 350,
           },
         ],
@@ -218,54 +218,54 @@ const SERVICES = {
   sem: {
     label: "SEM / Facebook, Instagram y Google Ads",
     plans: [
-      // Facebook + Instagram
+      // 📣 FACEBOOK + INSTAGRAM (ajustadas a mercado)
       {
         id: "sem-fb-ig-starter",
         name: "Campaña Facebook + Instagram · Starter",
-        type: "combo", // setup + mensual
-        priceOneTime: 250,
-        priceMonthly: 250,
+        type: "combo", // total + mensual
+        priceOneTime: 350,   // configuración inicial
+        priceMonthly: 400,   // gestión mensual
         features: [
           "1 campaña activa en Facebook + Instagram",
           "1–2 conjuntos de anuncios",
           "Segmentación básica por intereses y ubicación",
           "Optimización quincenal",
           "Reporte mensual simplificado",
-          "Inversión en anuncios recomendada: desde $300–$500 / mes (NO incluida)",
+          "Inversión en anuncios recomendada: desde $500–$800 / mes (NO incluida)",
         ],
       },
       {
         id: "sem-fb-ig-growth",
         name: "Campaña Facebook + Instagram · Growth",
         type: "combo",
-        priceOneTime: 350,
-        priceMonthly: 400,
+        priceOneTime: 600,
+        priceMonthly: 750,
         features: [
           "Hasta 2–3 campañas activas (tráfico + conversiones)",
           "Múltiples conjuntos de anuncios para test A/B",
           "Segmentación por intereses + audiencias personalizadas",
           "Optimización semanal",
           "Reporte mensual con insights y recomendaciones",
-          "Inversión en anuncios recomendada: desde $500–$800 / mes (NO incluida)",
+          "Inversión en anuncios recomendada: desde $800–$1,500 / mes (NO incluida)",
         ],
       },
       {
         id: "sem-fb-ig-pro",
         name: "Campaña Facebook + Instagram · Pro",
         type: "combo",
-        priceOneTime: 500,
-        priceMonthly: 700,
+        priceOneTime: 900,
+        priceMonthly: 1200,
         features: [
           "Estrategia completa (tráfico, conversiones y remarketing)",
-          "Pruebas A/B avanzadas (creativos y públicos)",
+          "Pruebas A/B avanzadas de creatividades y públicos",
           "Reunión de revisión de resultados 1 vez al mes",
           "Optimización 1–2 veces por semana",
           "Dashboard / reporte detallado",
-          "Inversión en anuncios recomendada: desde $800–$1,500 / mes (NO incluida)",
+          "Inversión en anuncios recomendada: desde $1,500 / mes en adelante (NO incluida)",
         ],
       },
 
-      // Google Ads
+      // 🔍 GOOGLE ADS (los dejamos como estaban)
       {
         id: "sem-google-basic",
         name: "Google Ads · Búsqueda Básica",

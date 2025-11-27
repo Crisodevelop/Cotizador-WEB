@@ -13,29 +13,38 @@ export default function QuoteBuilder() {
   const [addonsState, setAddonsState] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
 
-  // categoría y plan activos
   const category = SERVICES[categoryKey];
-  const plan = useMemo(
-    () => category.plans.find((p) => p.id === planId) || category.plans[0],
-    [category, planId]
-  );
 
-  // ========== TOTALES DEL PLAN ACTIVO (con extras) ==========
+  const plan = useMemo(() => {
+    const found = category.plans.find((p) => p.id === planId);
+    return found || category.plans[0];
+  }, [category, planId]);
+
+  // === Totales del plan activo (con extras) ===
   const {
     oneTimeTotalActive,
     monthlyTotalActive,
+    adsMonthlyActive,
     chosenAddonsActive,
   } = useMemo(() => {
     if (!plan) {
       return {
         oneTimeTotalActive: 0,
         monthlyTotalActive: 0,
+        adsMonthlyActive: 0,
         chosenAddonsActive: [],
       };
     }
 
-    let oneTime = plan.priceOneTime || 0;
+    const isCampaign = categoryKey === "sem" && plan.type === "combo";
+
+    // En SEM: priceMonthly = fee por trabajo mensual
+    //         priceOneTime = inversión mensual recomendada (ads)
+    // En el resto: priceOneTime = total, priceMonthly = mensual normal
+    let oneTime = isCampaign ? 0 : (plan.priceOneTime || 0);
     let monthly = plan.priceMonthly || 0;
+    let adsMonthly = isCampaign ? (plan.priceOneTime || 0) : 0;
+
     const breakdown = [];
 
     if (plan.addons) {
@@ -46,10 +55,17 @@ export default function QuoteBuilder() {
         if (add.pricePerUnit) {
           const qty = Number(val) || 0;
           if (qty > 0) {
-            const ot = (add.priceOneTime || 0) + (add.pricePerUnit || 0) * qty;
-            const mo = add.priceMonthly ? add.priceMonthly * qty : 0;
+            const ot = add.priceOneTime
+              ? add.priceOneTime * qty
+              : 0;
+            const mo = add.priceMonthly
+              ? add.priceMonthly * qty
+              : 0;
+
+            // Todos los addons cuentan como servicio (no ads)
             oneTime += ot;
             monthly += mo;
+
             breakdown.push({
               id: add.id,
               label: add.label,
@@ -59,11 +75,12 @@ export default function QuoteBuilder() {
             });
           }
         } else if (val) {
-          // Addon simple on/off
           const ot = add.priceOneTime || 0;
           const mo = add.priceMonthly || 0;
+
           oneTime += ot;
           monthly += mo;
+
           breakdown.push({
             id: add.id,
             label: add.label,
@@ -78,29 +95,34 @@ export default function QuoteBuilder() {
     return {
       oneTimeTotalActive: oneTime,
       monthlyTotalActive: monthly,
+      adsMonthlyActive: adsMonthly,
       chosenAddonsActive: breakdown,
     };
-  }, [plan, addonsState]);
+  }, [plan, addonsState, categoryKey]);
 
-  // ========== TOTALES GLOBALES (columna derecha) ==========
-  const { buffetOneTime, buffetMonthly } = useMemo(() => {
+  // === Totales globales (columna derecha) ===
+  const { buffetOneTime, buffetMonthly, buffetAds } = useMemo(() => {
     let ot = 0;
     let mo = 0;
+    let ads = 0;
     for (const item of selectedItems) {
       ot += item.priceOneTime || 0;
       mo += item.priceMonthly || 0;
+      ads += item.adsBudgetMonthly || 0;
     }
-    return { buffetOneTime: ot, buffetMonthly: mo };
+    return { buffetOneTime: ot, buffetMonthly: mo, buffetAds: ads };
   }, [selectedItems]);
 
-  // helper: buscar item
+  const buffetMonthlyGlobal = buffetMonthly + buffetAds;
+
+  // Helper: busca un ítem ya agregado
   function findItemIndex(arr, base) {
     return arr.findIndex(
       (x) => x.categoryKey === base.categoryKey && x.planId === base.planId
     );
   }
 
-  // ========== AGREGAR / ACTUALIZAR PLAN EN LA PROPUESTA ==========
+  // Agregar/actualizar un plan (si es activo, entra con extras)
   function addPlanToBuffet(p) {
     const base = {
       categoryKey,
@@ -110,28 +132,59 @@ export default function QuoteBuilder() {
       type: p.type,
     };
 
-    const isActive = p.id === plan.id;
+    const isActive = p.id === planId;
+    const isCampaign = categoryKey === "sem" && p.type === "combo";
+
+    let priceOneTime;
+    let priceMonthly;
+    let adsBudgetMonthly;
+    let addons = [];
+
+    if (isCampaign) {
+      // En SEM:
+      //  - priceMonthly: fee de trabajo mensual (con extras si activo)
+      //  - adsBudgetMonthly: inversión mensual recomendada
+      //  - priceOneTime: 0 (no total real)
+      priceOneTime = 0;
+      priceMonthly = isActive
+        ? monthlyTotalActive
+        : (p.priceMonthly || 0);
+      adsBudgetMonthly = isActive
+        ? adsMonthlyActive
+        : (p.priceOneTime || 0);
+      addons = isActive ? chosenAddonsActive : [];
+    } else {
+      priceOneTime = isActive
+        ? oneTimeTotalActive
+        : (p.priceOneTime || 0);
+      priceMonthly = isActive
+        ? monthlyTotalActive
+        : (p.priceMonthly || 0);
+      adsBudgetMonthly = 0;
+      addons = isActive ? chosenAddonsActive : [];
+    }
 
     const entry = {
       ...base,
-      lineId: `${base.categoryKey}-${base.planId}`,
-      priceOneTime: isActive ? oneTimeTotalActive : (p.priceOneTime || 0),
-      priceMonthly: isActive ? monthlyTotalActive : (p.priceMonthly || 0),
-      addons: isActive ? chosenAddonsActive : [],
+      lineId: `${base.categoryKey}-${base.planId}`, // estable para upsert
+      priceOneTime,
+      priceMonthly,
+      adsBudgetMonthly,
+      addons,
     };
 
     setSelectedItems((prev) => {
       const idx = findItemIndex(prev, base);
       if (idx >= 0) {
         const copy = [...prev];
-        copy[idx] = entry;
+        copy[idx] = entry; // update
         return copy;
       }
-      return [...prev, entry];
+      return [...prev, entry]; // add
     });
   }
 
-  // ========== AUTO-SYNC EXTRAS → PROPUESTA ==========
+  // AUTO-SYNC: si el plan activo ya está en la propuesta, reflejar cambios de extras al instante
   useEffect(() => {
     if (!plan) return;
 
@@ -142,23 +195,35 @@ export default function QuoteBuilder() {
       planName: plan.name,
     };
 
+    const isCampaign = categoryKey === "sem" && plan.type === "combo";
+
     setSelectedItems((prev) => {
       const idx = findItemIndex(prev, base);
       if (idx === -1) return prev;
 
       const current = prev[idx];
+
+      const expected = {
+        priceOneTime: isCampaign ? 0 : oneTimeTotalActive,
+        priceMonthly: monthlyTotalActive,
+        adsBudgetMonthly: isCampaign ? adsMonthlyActive : 0,
+      };
+
       const needsUpdate =
-        current.priceOneTime !== oneTimeTotalActive ||
-        current.priceMonthly !== monthlyTotalActive ||
-        JSON.stringify(current.addons) !== JSON.stringify(chosenAddonsActive);
+        current.priceOneTime !== expected.priceOneTime ||
+        current.priceMonthly !== expected.priceMonthly ||
+        (current.adsBudgetMonthly || 0) !== expected.adsBudgetMonthly ||
+        JSON.stringify(current.addons) !==
+          JSON.stringify(chosenAddonsActive);
 
       if (!needsUpdate) return prev;
 
       const copy = [...prev];
       copy[idx] = {
         ...current,
-        priceOneTime: oneTimeTotalActive,
-        priceMonthly: monthlyTotalActive,
+        priceOneTime: expected.priceOneTime,
+        priceMonthly: expected.priceMonthly,
+        adsBudgetMonthly: expected.adsBudgetMonthly,
         addons: chosenAddonsActive,
       };
       return copy;
@@ -169,46 +234,69 @@ export default function QuoteBuilder() {
     plan,
     oneTimeTotalActive,
     monthlyTotalActive,
+    adsMonthlyActive,
     chosenAddonsActive,
   ]);
 
-  // ========== EMAIL (estructura limpia) ==========
+  // === Email (estructura con inversión de anuncios) ===
   const emailText = useMemo(() => {
     const lines = [];
     lines.push(`COTIZACIÓN — ${new Date().toLocaleDateString("es-DO")}`);
     lines.push(`Proveedor: Crisodevelop (crisodevelop.com)`);
     lines.push("");
     lines.push(`RESUMEN`);
-    lines.push(`• Total inicial (setup): ${formatUSD(buffetOneTime)}`);
+    lines.push(`• Total inicial: ${formatUSD(buffetOneTime)}`);
     lines.push(
-      `• Total mensual: ${formatUSD(buffetMonthly).replace(" USD", " USD/mes")}`
+      `• Total mensual servicios: ${formatUSD(buffetMonthly).replace(
+        " USD",
+        " USD/mes"
+      )}`
+    );
+    lines.push(
+      `• Inversión mensual en anuncios (recomendada): ${formatUSD(
+        buffetAds
+      ).replace(" USD", " USD/mes")}`
+    );
+    lines.push(
+      `• Total mensual global estimado: ${formatUSD(
+        buffetMonthlyGlobal
+      ).replace(" USD", " USD/mes")}`
     );
     lines.push("");
 
     if (selectedItems.length > 0) {
-      lines.push("DETALLE");
+      lines.push(`DETALLE`);
       selectedItems.forEach((item, i) => {
         lines.push(`${i + 1}) ${item.categoryLabel} — ${item.planName}`);
+
         const s = item.priceOneTime
-          ? `Setup: ${formatUSD(item.priceOneTime)}`
+          ? `Total: ${formatUSD(item.priceOneTime)}`
           : null;
         const m = item.priceMonthly
-          ? `Mensual: ${formatUSD(item.priceMonthly).replace(
+          ? `Mensual servicio: ${formatUSD(item.priceMonthly).replace(
               " USD",
               " USD/mes"
             )}`
           : null;
-        if (s || m) {
-          lines.push(`   ${[s, m].filter(Boolean).join(" | ")}`);
+        const inv = item.adsBudgetMonthly
+          ? `Inversión anuncios recomendada: ${formatUSD(
+              item.adsBudgetMonthly
+            ).replace(" USD", " USD/mes")}`
+          : null;
+
+        if (s || m || inv) {
+          lines.push(
+            `   ${[s, m, inv].filter(Boolean).join(" | ")}`
+          );
         }
 
         if (item.addons?.length) {
-          lines.push("   Extras incluidos:");
+          lines.push(`   Extras incluidos:`);
           item.addons.forEach((a) => {
             const qty =
               typeof a.qty === "number" && a.qty > 0 ? ` x${a.qty}` : "";
             const ot = a.priceOneTime
-              ? `Setup ${formatUSD(a.priceOneTime)}`
+              ? `Total ${formatUSD(a.priceOneTime)}`
               : null;
             const mo = a.priceMonthly
               ? `Mensual ${formatUSD(a.priceMonthly).replace(
@@ -218,7 +306,9 @@ export default function QuoteBuilder() {
               : null;
             lines.push(
               `   - ${a.label}${qty}${
-                ot || mo ? ` — ${[ot, mo].filter(Boolean).join(" | ")}` : ""
+                ot || mo
+                  ? ` — ${[ot, mo].filter(Boolean).join(" | ")}`
+                  : ""
               }`
             );
           });
@@ -226,21 +316,29 @@ export default function QuoteBuilder() {
         lines.push("");
       });
     } else {
-      lines.push("(Aún sin ítems seleccionados)");
+      lines.push(`(Aún sin ítems seleccionados)`);
       lines.push("");
     }
 
     lines.push(
-      "Notas: precios estimados sujetos a alcance final, volumen y dependencias de terceros."
+      `Notas: los montos de anuncios son inversión recomendada y se pagan directamente a las plataformas (Meta / Google). Los precios de servicio pueden ajustarse según alcance final, volumen y dependencias de terceros.`
     );
     return lines.join("\n");
-  }, [selectedItems, buffetOneTime, buffetMonthly]);
+  }, [
+    selectedItems,
+    buffetOneTime,
+    buffetMonthly,
+    buffetAds,
+    buffetMonthlyGlobal,
+  ]);
 
   const mailHref = `mailto:crisodevelop@gmail.com?subject=${encodeURIComponent(
     "Cotización — Crisodevelop"
   )}&body=${encodeURIComponent(emailText)}`;
 
-  // ========== UI ==========
+  const isCampaignActive =
+    categoryKey === "sem" && plan && plan.type === "combo";
+
   return (
     <main className="min-h-screen w-full bg-bg text-text flex flex-col items-center p-6 md:p-10">
       <div className="w-full max-w-7xl grid md:grid-cols-[2fr_1fr] gap-8">
@@ -279,12 +377,17 @@ export default function QuoteBuilder() {
           <div className="space-y-4">
             {category.plans.map((p) => {
               const isActive = planId === p.id;
-              const showOneTime = isActive
-                ? oneTimeTotalActive
-                : p.priceOneTime || 0;
-              const showMonthly = isActive
-                ? monthlyTotalActive
-                : p.priceMonthly || 0;
+              const isCampaignCard =
+                categoryKey === "sem" && p.type === "combo";
+
+              const showOneTime =
+                isActive && !isCampaignCard
+                  ? oneTimeTotalActive
+                  : p.priceOneTime || 0;
+              const showMonthly =
+                isActive && !isCampaignCard
+                  ? monthlyTotalActive
+                  : p.priceMonthly || 0;
 
               return (
                 <div
@@ -308,7 +411,7 @@ export default function QuoteBuilder() {
                             ? "Pago único"
                             : p.type === "monthly"
                             ? "Mensual"
-                            : "Setup + Mensual"}
+                            : "Total + Mensual"}
                         </span>
                       </div>
                       <ul className="text-xs text-text/60 mt-2 space-y-1">
@@ -322,21 +425,43 @@ export default function QuoteBuilder() {
                     </div>
 
                     <div className="text-right text-primary font-bold text-sm">
-                      {p.priceOneTime !== undefined && p.priceOneTime > 0 && (
-                        <div>
-                          {formatUSD(showOneTime).replace(" USD", "")}{" "}
-                          <span className="text-[10px] text-text/60 font-normal">
-                            USD
-                          </span>
-                        </div>
-                      )}
-                      {p.priceMonthly !== undefined && p.priceMonthly > 0 && (
-                        <div>
-                          {formatUSD(showMonthly).replace(" USD", "")}{" "}
-                          <span className="text-[10px] text-text/60 font-normal">
-                            /mes
-                          </span>
-                        </div>
+                      {isCampaignCard ? (
+                        <>
+                          {/* En SEM mostramos explícitamente las dos mensualidades */}
+                          <div>
+                            {formatUSD(p.priceMonthly || 0).replace(" USD", "")}{" "}
+                            <span className="text-[10px] text-text/60 font-normal">
+                              USD/mes trabajo
+                            </span>
+                          </div>
+                          <div>
+                            {formatUSD(p.priceOneTime || 0).replace(" USD", "")}{" "}
+                            <span className="text-[10px] text-text/60 font-normal">
+                              USD/mes anuncios
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {p.priceOneTime !== undefined &&
+                            p.priceOneTime > 0 && (
+                              <div>
+                                {formatUSD(showOneTime).replace(" USD", "")}{" "}
+                                <span className="text-[10px] text-text/60 font-normal">
+                                  USD
+                                </span>
+                              </div>
+                            )}
+                          {p.priceMonthly !== undefined &&
+                            p.priceMonthly > 0 && (
+                              <div>
+                                {formatUSD(showMonthly).replace(" USD", "")}{" "}
+                                <span className="text-[10px] text-text/60 font-normal">
+                                  /mes
+                                </span>
+                              </div>
+                            )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -345,7 +470,7 @@ export default function QuoteBuilder() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        addPlanToBuffet(p);
+                        addPlanToBuffet(p); // upsert si ya estaba
                       }}
                       className="px-3 py-2 text-xs rounded-lg font-semibold bg-primary text-white hover:bg-secondary transition border border-primary"
                     >
@@ -376,7 +501,7 @@ export default function QuoteBuilder() {
                       })`
                     : [
                         add.priceOneTime
-                          ? `Setup: ${formatUSD(add.priceOneTime)}`
+                          ? `Total: ${formatUSD(add.priceOneTime)}`
                           : null,
                         add.priceMonthly
                           ? `Mensual: ${formatUSD(add.priceMonthly)}`
@@ -440,14 +565,21 @@ export default function QuoteBuilder() {
             <div className="font-semibold text-text mb-2 text-sm">
               Vista previa de este plan
             </div>
+
+            {!isCampaignActive && (
+              <div className="flex justify-between">
+                <span>Total único estimado:</span>
+                <span className="font-semibold text-text">
+                  {formatUSD(oneTimeTotalActive)}
+                </span>
+              </div>
+            )}
+
             <div className="flex justify-between">
-              <span>Setup único estimado:</span>
-              <span className="font-semibold text-text">
-                {formatUSD(oneTimeTotalActive)}
+              <span>
+                Mensual servicio
+                {isCampaignActive ? " (gestión):" : ":"}
               </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Mensual estimado:</span>
               <span className="font-semibold text-text">
                 {formatUSD(monthlyTotalActive).replace(
                   " USD",
@@ -455,10 +587,32 @@ export default function QuoteBuilder() {
                 )}
               </span>
             </div>
+
+            {isCampaignActive && (
+              <>
+                <div className="flex justify-between">
+                  <span>Inversión mensual en anuncios:</span>
+                  <span className="font-semibold text-text">
+                    {formatUSD(adsMonthlyActive).replace(
+                      " USD",
+                      " USD / mes"
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between mt-1 border-t border-dashed border-border pt-1">
+                  <span>Total mensual global (plan):</span>
+                  <span className="font-semibold text-text">
+                    {formatUSD(
+                      monthlyTotalActive + adsMonthlyActive
+                    ).replace(" USD", " USD / mes")}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
-        {/* DERECHA — PROPUESTA TOTAL */}
+        {/* DERECHA — PROPUESTA TOTAL (con extras visibles) */}
         <aside className="bg-surface rounded-2xl shadow-lg p-8 border border-border h-fit sticky top-8">
           <h2 className="text-lg font-semibold text-primary mb-4">
             Propuesta total
@@ -515,7 +669,7 @@ export default function QuoteBuilder() {
                             <span className="text-text">
                               {[
                                 a.priceOneTime
-                                  ? `Setup ${formatUSD(
+                                  ? `Total ${formatUSD(
                                       a.priceOneTime
                                     )}`
                                   : null,
@@ -537,10 +691,10 @@ export default function QuoteBuilder() {
                     </div>
                   )}
 
-                  <div className="mt-3 leading-relaxed text-text/70">
+                  <div className="mt-3 leading-relaxed text-text/70 space-y-1">
                     {item.priceOneTime > 0 && (
                       <div className="flex justify-between">
-                        <span>Setup:</span>
+                        <span>Total:</span>
                         <span className="font-semibold text-text">
                           {formatUSD(item.priceOneTime)}
                         </span>
@@ -548,9 +702,22 @@ export default function QuoteBuilder() {
                     )}
                     {item.priceMonthly > 0 && (
                       <div className="flex justify-between">
-                        <span>Mensual:</span>
+                        <span>Mensual servicios:</span>
                         <span className="font-semibold text-text">
                           {formatUSD(item.priceMonthly).replace(
+                            " USD",
+                            " USD / mes"
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    {item.adsBudgetMonthly > 0 && (
+                      <div className="flex justify-between">
+                        <span>
+                          Inversión anuncios (recomendada):
+                        </span>
+                        <span className="font-semibold text-text">
+                          {formatUSD(item.adsBudgetMonthly).replace(
                             " USD",
                             " USD / mes"
                           )}
@@ -567,15 +734,35 @@ export default function QuoteBuilder() {
 
           <div className="text-xs text-text/70 space-y-2">
             <div className="flex justify-between">
-              <span>Total inicial</span>
+              <span>Total inicial:</span>
               <span className="font-semibold text-text">
                 {formatUSD(buffetOneTime)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span>Total mensual</span>
+              <span>Total mensual servicios</span>
               <span className="font-semibold text-text">
                 {formatUSD(buffetMonthly).replace(
+                  " USD",
+                  " USD / mes"
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>
+                Inversión mensual en anuncios (recomendada)
+              </span>
+              <span className="font-semibold text-text">
+                {formatUSD(buffetAds).replace(
+                  " USD",
+                  " USD / mes"
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between border-t border-dashed border-border pt-2 mt-1">
+              <span>Total mensual global estimado</span>
+              <span className="font-semibold text-text">
+                {formatUSD(buffetMonthlyGlobal).replace(
                   " USD",
                   " USD / mes"
                 )}
@@ -591,8 +778,10 @@ export default function QuoteBuilder() {
           </a>
 
           <p className="text-[11px] text-text/50 mt-4 leading-relaxed">
-            *Precios estimados. Pueden ajustarse según alcance final, volumen y
-            dependencias de terceros.
+            *Los precios de servicio corresponden a honorarios de Crisodevelop.
+            La inversión en anuncios es un monto recomendado que se paga
+            directamente a las plataformas (Meta / Google) y puede ajustarse
+            según resultados y presupuesto.
           </p>
         </aside>
       </div>
