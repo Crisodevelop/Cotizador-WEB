@@ -1,6 +1,6 @@
 # Cotizador Web - Crisodevelop
 
-![Portada](src/public/img/Portada.png)
+![Portada](Portada.png)
 
 ## Descripcion
 
