@@ -2,8 +2,150 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ========== DARK THEME (default) ========== */
+:root {
+  --color-bg: #0A0F1C;
+  --color-bg-light: #111827;
+  --color-text: #F1F5F9;
+  --color-text-muted: #94A3B8;
+  --color-primary: #14B8A6;
+  --color-primary-light: #2DD4BF;
+  --color-secondary: #06B6D4;
+  --color-accent: #14B8A6;
+  --color-border: #1E3A5F;
+  --color-surface: #0D1B2A;
+  --color-surface-light: #132337;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --shadow-glow: 0 0 20px rgba(20, 184, 166, 0.3);
+  --shadow-glow-lg: 0 0 40px rgba(20, 184, 166, 0.4);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --gradient-bg: linear-gradient(135deg, #0A0F1C 0%, #111827 50%, #0A0F1C 100%);
+  --glass-bg: rgba(13, 27, 42, 0.9);
+  --glass-border: rgba(20, 184, 166, 0.15);
+}
+
+/* ========== LIGHT THEME ========== */
+[data-theme="light"] {
+  --color-bg: #F8FAFC;
+  --color-bg-light: #F1F5F9;
+  --color-text: #0F172A;
+  --color-text-muted: #64748B;
+  --color-primary: #0D9488;
+  --color-primary-light: #14B8A6;
+  --color-secondary: #0891B2;
+  --color-accent: #0D9488;
+  --color-border: #CBD5E1;
+  --color-surface: #FFFFFF;
+  --color-surface-light: #F8FAFC;
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --shadow-glow: 0 0 20px rgba(13, 148, 136, 0.15);
+  --shadow-glow-lg: 0 0 40px rgba(13, 148, 136, 0.2);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --gradient-bg: linear-gradient(135deg, #F8FAFC 0%, #F0FDFA 50%, #F8FAFC 100%);
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(13, 148, 136, 0.1);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-bg-light);
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--color-bg-light);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
 body {
-  background-color: #F8FAFC;
-  color: #0F172A;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  background: var(--gradient-bg);
+  min-height: 100vh;
+  color: var(--color-text);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    transition: background 0.3s ease;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(135deg, var(--color-surface), var(--color-surface-light));
+    border-radius: 1rem;
+    transition: background 0.3s ease;
+  }
+
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .gradient-btn {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  }
+
+  .card-hover {
+    transition: all 0.3s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* ========== PDF PRINT STYLES ========== */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
+
+.print-only {
+  display: none;
 }

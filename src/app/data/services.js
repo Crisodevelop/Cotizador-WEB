@@ -198,12 +198,13 @@ const SERVICES = {
           {
             id: "ecom-products-upload",
             label: "Subida de productos (por unidad)",
-            pricePerUnit: 10, // se multiplica por cantidad
+            pricePerUnit: 10,
+            priceOneTime: 10, // se suma al precio final
           },
           {
             id: "ecom-maint",
             label: "Mantenimiento tienda",
-            priceMonthly: 100,
+            priceMonthly: 300,
           },
         ],
       },
@@ -230,16 +231,6 @@ const SERVICES = {
             id: "re-hosting",
             label: "Hosting + Dominio",
             priceOneTime: 256,
-          },
-          {
-            id: "re-elementor",
-            label: "Licencia Elementor Pro",
-            priceOneTime: 85,
-          },
-          {
-            id: "re-booking",
-            label: "Sistema de Reservas",
-            priceOneTime: 104,
           },
         ],
       },
