@@ -7,24 +7,19 @@ export default function Header() {
     <header className="w-full py-6 px-6 md:px-10">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-glow">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary via-primary-light to-secondary flex items-center justify-center shadow-glow">
+            {/* Flame icon */}
             <svg
               className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
+              fill="currentColor"
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-              />
+              <path d="M12 23c-3.866 0-7-3.134-7-7 0-2.577 1.409-4.787 3.5-5.979C8.5 8.5 9 6.5 9 6.5s1.5 2.5 3 2.5c1.5 0 3-2.5 3-2.5s.5 2 .5 3.521c2.091 1.192 3.5 3.402 3.5 5.979 0 3.866-3.134 7-7 7zm0-2c2.761 0 5-2.239 5-5 0-1.657-.895-3.087-2.226-3.873C14.5 11.5 14 10 14 10s-1 1.5-2 1.5-2-1.5-2-1.5-.5 1.5-.774 2.127C7.895 12.913 7 14.343 7 16c0 2.761 2.239 5 5 5z"/>
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold gradient-text">Crisodevelop</h1>
-            <p className="text-xs text-text-muted">Cotizador de Servicios</p>
+            <h1 className="text-xl font-bold gradient-text">Cotizador Web</h1>
+            <p className="text-xs text-text-muted">@crisodevelop</p>
           </div>
         </div>
 

@@ -314,7 +314,7 @@ export default function QuoteBuilder() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative z-10">
       <Header />
 
       <main className="flex-1 w-full px-6 md:px-10 pb-10">
